@@ -1,5 +1,6 @@
 """Python API for Sensibo."""
 from __future__ import annotations
+import json
 
 from typing import Any
 from aiohttp import ClientSession
@@ -84,7 +85,7 @@ class SensiboClient(object):
 
     async def _put(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.put(API + path, params=params, data=data) as resp:
+        async with self._session.put(API + path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -95,7 +96,7 @@ class SensiboClient(object):
 
     async def _post(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.post(API + path, params=params, data=data) as resp:
+        async with self._session.post(API + path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -106,7 +107,7 @@ class SensiboClient(object):
 
     async def _patch(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.patch(API + path, params=params, data=data) as resp:
+        async with self._session.patch(API + path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
