@@ -42,10 +42,10 @@ class SensiboClient(object):
         params = {"apiKey": self.api_key}
         return await self._put("/pods/{}/smartmode".format(uid), params, data)
 
-    async def async_get_timer(self, uid: str):
+    async def async_get_schedules(self, uid: str):
         """Get measurements of a device."""
         params = {"apiKey": self.api_key}
-        return await self._get("/pods/{}/timer".format(uid), params)
+        return await self._get("/pods/{}/schedules/".format(uid), params)
 
     async def async_set_ac_states(
         self,
