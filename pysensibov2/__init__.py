@@ -7,7 +7,8 @@ from aiohttp import ClientSession
 
 from .exceptions import SensiboError, AuthenticationError
 
-API = "https://home.sensibo.com/api/v2"
+APIV1 = "https://home.sensibo.com/api/v1"
+APIV2 = "https://home.sensibo.com/api/v2"
 
 
 class SensiboClient(object):
@@ -74,7 +75,7 @@ class SensiboClient(object):
 
     async def _get(self, path: str, params: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.get(API + path, params=params) as resp:
+        async with self._session.get(APIV2 + path, params=params) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -85,7 +86,7 @@ class SensiboClient(object):
 
     async def _put(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.put(API + path, params=params, data=json.dumps(data)) as resp:
+        async with self._session.put(APIV2 + path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -96,7 +97,7 @@ class SensiboClient(object):
 
     async def _post(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.post(API + path, params=params, data=json.dumps(data)) as resp:
+        async with self._session.post(APIV2 + path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -107,7 +108,7 @@ class SensiboClient(object):
 
     async def _patch(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.patch(API + path, params=params, data=json.dumps(data)) as resp:
+        async with self._session.patch(APIV2 + path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
