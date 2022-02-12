@@ -61,14 +61,15 @@ class SensiboClient(object):
         uid: str,
         name: str,
         value: bool | int | str,
+        ac_state: dict[str,Any],
         assumed_state: bool = False,
     ):
         """Set a specific device property."""
         params = {"apiKey": self.api_key}
-        data = {"newValue": value}
+        data = {"currentAcState": ac_state, "newValue": value}
         if assumed_state:
             data["reason"] = "StateCorrectionByUser"
-        return await self._post("/pods/{}/acStates/{}".format(uid, name), params, data)
+        return await self._patch("/pods/{}/acStates/{}".format(uid, name), params, data)
 
     async def _get(self, path: str, params: dict[str, Any]):
         """Make api call to Sensibo api."""
