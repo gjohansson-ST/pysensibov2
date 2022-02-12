@@ -19,7 +19,6 @@ class SensiboClient(object):
         session: aiohttp.ClientSession or None to create a new session.
         """
         self.api_key = api_key
-        self._params = {"apiKey": api_key}
         self._session = session if session else ClientSession()
 
     async def async_get_devices(self, fields: str = "*"):
@@ -45,7 +44,7 @@ class SensiboClient(object):
     async def async_get_timer(self, uid: str):
         """Get measurements of a device."""
         params = {"apiKey": self.api_key}
-        return await self._get("/pods/{}/timer/".format(uid), params)
+        return await self._get("/pods/{}/timer".format(uid), params)
 
     async def async_set_ac_states(
         self,
