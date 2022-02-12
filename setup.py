@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 print(find_packages())
 setup(
-    name='pysensibo',
+    name='pysensibov2',
     version='1.0.0',
     description='Python API for Sensibo',
     long_description=long_description,
