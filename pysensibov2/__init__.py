@@ -78,8 +78,8 @@ class SensiboClient(object):
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 raise SensiboError(f"API error: {resp.text()}")
-            response = await resp.json()["result"]
-        return response
+            response = await resp.json()
+        return response["result"]
 
     async def _put(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
@@ -88,8 +88,8 @@ class SensiboClient(object):
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 raise SensiboError(f"API error: {resp.text()}")
-            response = await resp.json()["result"]
-        return response
+            response = await resp.json()
+        return response["result"]
 
     async def _post(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
@@ -98,8 +98,8 @@ class SensiboClient(object):
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 raise SensiboError(f"API error: {resp.text()}")
-            response = await resp.json()["result"]
-        return response
+            response = await resp.json()
+        return response["result"]
 
     async def _patch(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
@@ -108,5 +108,5 @@ class SensiboClient(object):
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 raise SensiboError(f"API error: {resp.text()}")
-            response = await resp.json()["result"]
-        return response
+            response = await resp.json()
+        return response["result"]
