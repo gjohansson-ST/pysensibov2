@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any
 from aiohttp import ClientSession
 
-from exceptions import SensiboError, AuthenticationError
+from .exceptions import SensiboError, AuthenticationError
 
 API = "https://home.sensibo.com/api/v2"
 
@@ -26,13 +26,11 @@ class SensiboClient(object):
         """Get all devices."""
         params = {"apiKey": self.api_key, "fields": fields}
         return await self._get("/users/me/pods", params)
-        
 
     async def async_get_device(self, uid: str, fields: str = "*"):
         """Get specific device by UID."""
         params = {"apiKey": self.api_key, "fields": fields}
         return await self._get("/pods/{}".format(uid), params)
-        
 
     async def async_get_climate_react(self, uid: str):
         """Get measurements of a device."""
@@ -58,7 +56,6 @@ class SensiboClient(object):
         params = {"apiKey": self.api_key}
         data = {"acState": acstate}
         return await self._post("/pods/{}/acStates".format(uid), params, data)
-    
 
     async def async_set_ac_state_property(
         self,
@@ -74,45 +71,36 @@ class SensiboClient(object):
             data["reason"] = "StateCorrectionByUser"
         return await self._post("/pods/{}/acStates/{}".format(uid, name), params, data)
 
-
-    async def _get(self, path: str, params: dict[str,Any]):
+    async def _get(self, path: str, params: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.get(
-            API + path, params=params
-        ) as resp:
+        async with self._session.get(API + path, params=params) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 raise SensiboError(f"API error: {resp.text()}")
             return await resp.json()["result"]
 
-    async def _put(self, path: str, params: dict[str,Any], data: dict[str,Any]):
+    async def _put(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.put(
-            API + path, params=params, data=data
-        ) as resp:
+        async with self._session.put(API + path, params=params, data=data) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 raise SensiboError(f"API error: {resp.text()}")
             return await resp.json()["result"]
 
-    async def _post(self, path: str, params: dict[str,Any], data: dict[str,Any]):
+    async def _post(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.post(
-            API + path, params=params, data=data
-        ) as resp:
+        async with self._session.post(API + path, params=params, data=data) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 raise SensiboError(f"API error: {resp.text()}")
             return await resp.json()["result"]
 
-    async def _patch(self, path: str, params: dict[str,Any], data: dict[str,Any]):
+    async def _patch(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.patch(
-            API + path, params=params, data=data
-        ) as resp:
+        async with self._session.patch(API + path, params=params, data=data) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
