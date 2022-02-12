@@ -77,7 +77,8 @@ class SensiboClient(object):
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
-                raise SensiboError(f"API error: {resp.text()}")
+                error = await resp.text()
+                raise SensiboError(f"API error: {error}")
             response = await resp.json()
         return response["result"]
 
@@ -87,7 +88,8 @@ class SensiboClient(object):
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
-                raise SensiboError(f"API error: {resp.text()}")
+                error = await resp.text()
+                raise SensiboError(f"API error: {error}")
             response = await resp.json()
         return response["result"]
 
@@ -97,7 +99,8 @@ class SensiboClient(object):
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
-                raise SensiboError(f"API error: {resp.text()}")
+                error = await resp.text()
+                raise SensiboError(f"API error: {error}")
             response = await resp.json()
         return response["result"]
 
@@ -107,6 +110,7 @@ class SensiboClient(object):
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
-                raise SensiboError(f"API error: {resp.text()}")
+                error = await resp.text()
+                raise SensiboError(f"API error: {error}")
             response = await resp.json()
         return response["result"]
