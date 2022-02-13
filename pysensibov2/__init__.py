@@ -26,27 +26,27 @@ class SensiboClient(object):
     async def async_get_devices(self, fields: str = "*"):
         """Get all devices."""
         params = {"apiKey": self.api_key, "fields": fields}
-        return await self._get("/users/me/pods", params)
+        return await self._get(APIV2+"/users/me/pods", params)
 
     async def async_get_device(self, uid: str, fields: str = "*"):
         """Get specific device by UID."""
         params = {"apiKey": self.api_key, "fields": fields}
-        return await self._get("/pods/{}".format(uid), params)
+        return await self._get(APIV2+"/pods/{}".format(uid), params)
 
     async def async_get_climate_react(self, uid: str):
         """Get measurements of a device."""
         params = {"apiKey": self.api_key}
-        return await self._get("/pods/{}/smartmode".format(uid), params)
+        return await self._get(APIV2+"/pods/{}/smartmode".format(uid), params)
 
     async def async_set_climate_react(self, uid: str, data: dict[str, bool]):
         """Get measurements of a device."""
         params = {"apiKey": self.api_key}
-        return await self._put("/pods/{}/smartmode".format(uid), params, data)
+        return await self._put(APIV2+"/pods/{}/smartmode".format(uid), params, data)
 
-    async def async_get_schedules(self, uid: str):
+    async def async_get_timer(self, uid: str):
         """Get measurements of a device."""
         params = {"apiKey": self.api_key}
-        return await self._get("/pods/{}/schedules/".format(uid), params)
+        return await self._get(APIV1+"/pods/{}/schedules/".format(uid), params)
 
     async def async_set_ac_states(
         self,
@@ -56,7 +56,7 @@ class SensiboClient(object):
         """Set a specific device property."""
         params = {"apiKey": self.api_key}
         data = {"acState": acstate}
-        return await self._post("/pods/{}/acStates".format(uid), params, data)
+        return await self._post(APIV2+"/pods/{}/acStates".format(uid), params, data)
 
     async def async_set_ac_state_property(
         self,
@@ -71,11 +71,11 @@ class SensiboClient(object):
         data = {"currentAcState": ac_state, "newValue": value}
         if assumed_state:
             data["reason"] = "StateCorrectionByUser"
-        return await self._patch("/pods/{}/acStates/{}".format(uid, name), params, data)
+        return await self._patch(APIV2+"/pods/{}/acStates/{}".format(uid, name), params, data)
 
     async def _get(self, path: str, params: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.get(APIV2 + path, params=params) as resp:
+        async with self._session.get(path, params=params) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -86,7 +86,7 @@ class SensiboClient(object):
 
     async def _put(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.put(APIV2 + path, params=params, data=json.dumps(data)) as resp:
+        async with self._session.put(path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -97,7 +97,7 @@ class SensiboClient(object):
 
     async def _post(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.post(APIV2 + path, params=params, data=json.dumps(data)) as resp:
+        async with self._session.post(path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -108,7 +108,7 @@ class SensiboClient(object):
 
     async def _patch(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make api call to Sensibo api."""
-        async with self._session.patch(APIV2 + path, params=params, data=json.dumps(data)) as resp:
+        async with self._session.patch(path, params=params, data=json.dumps(data)) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
