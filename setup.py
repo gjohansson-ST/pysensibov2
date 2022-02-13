@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 print(find_packages())
 setup(
     name='pysensibov2',
-    version='1.0.0',
+    version='1.0.1',
     description='Python API for Sensibo',
     long_description=long_description,
     url='https://github.com/gjohansson-ST/pysensibov2',

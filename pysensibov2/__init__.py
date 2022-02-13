@@ -10,11 +10,15 @@ from .exceptions import SensiboError, AuthenticationError
 APIV1 = "https://home.sensibo.com/api/v1"
 APIV2 = "https://home.sensibo.com/api/v2"
 
+TIMEOUT = 5 * 60
+
 
 class SensiboClient(object):
     """Sensibo client."""
 
-    def __init__(self, api_key: str, session: ClientSession | None = None):
+    def __init__(
+        self, api_key: str, session: ClientSession | None = None, timeout: int = TIMEOUT
+    ):
         """Initialize Sensibo Client.
 
         api_key: Key from https://home.sensibo.com/me/api
@@ -22,6 +26,7 @@ class SensiboClient(object):
         """
         self.api_key = api_key
         self._session = session if session else ClientSession()
+        self.timeout = timeout
 
     async def async_get_devices(self, fields: str = "*"):
         """Get all devices.
@@ -176,7 +181,7 @@ class SensiboClient(object):
 
     async def _get(self, path: str, params: dict[str, Any]):
         """Make GET api call to Sensibo api."""
-        async with self._session.get(path, params=params) as resp:
+        async with self._session.get(path, params=params, timeout=self.timeout) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
@@ -191,7 +196,7 @@ class SensiboClient(object):
     async def _put(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make PUT api call to Sensibo api."""
         async with self._session.put(
-            path, params=params, data=json.dumps(data)
+            path, params=params, data=json.dumps(data), timeout=self.timeout
         ) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
@@ -207,7 +212,7 @@ class SensiboClient(object):
     async def _post(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make POST api call to Sensibo api."""
         async with self._session.post(
-            path, params=params, data=json.dumps(data)
+            path, params=params, data=json.dumps(data), timeout=self.timeout
         ) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
@@ -223,7 +228,7 @@ class SensiboClient(object):
     async def _patch(self, path: str, params: dict[str, Any], data: dict[str, Any]):
         """Make PATCH api call to Sensibo api."""
         async with self._session.patch(
-            path, params=params, data=json.dumps(data)
+            path, params=params, data=json.dumps(data), timeout=self.timeout
         ) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
@@ -238,7 +243,9 @@ class SensiboClient(object):
 
     async def _delete(self, path: str, params: dict[str, Any]):
         """Make DELETE api call to Sensibo api."""
-        async with self._session.delete(path, params=params) as resp:
+        async with self._session.delete(
+            path, params=params, timeout=self.timeout
+        ) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
