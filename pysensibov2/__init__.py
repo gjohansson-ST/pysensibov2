@@ -15,7 +15,7 @@ class SensiboClient(object):
     """Sensibo client."""
 
     def __init__(self, api_key: str, session: ClientSession | None = None):
-        """Constructor.
+        """Initialize Sensibo Client.
 
         api_key: Key from https://home.sensibo.com/me/api
         session: aiohttp.ClientSession or None to create a new session.
@@ -24,95 +24,228 @@ class SensiboClient(object):
         self._session = session if session else ClientSession()
 
     async def async_get_devices(self, fields: str = "*"):
-        """Get all devices."""
+        """Get all devices.
+
+        fields: * for all fields or specific fields
+        """
         params = {"apiKey": self.api_key, "fields": fields}
-        return await self._get(APIV2+"/users/me/pods", params)
+        return await self._get(APIV2 + "/users/me/pods", params)
 
     async def async_get_device(self, uid: str, fields: str = "*"):
-        """Get specific device by UID."""
+        """Get specific device by UID.
+
+        uid: UID for device
+        fields: * for all fields or specific fields
+        """
         params = {"apiKey": self.api_key, "fields": fields}
-        return await self._get(APIV2+"/pods/{}".format(uid), params)
+        return await self._get(APIV2 + "/pods/{}".format(uid), params)
 
     async def async_get_climate_react(self, uid: str):
-        """Get measurements of a device."""
-        params = {"apiKey": self.api_key}
-        return await self._get(APIV2+"/pods/{}/smartmode".format(uid), params)
+        """Get Climate React on a device.
 
-    async def async_set_climate_react(self, uid: str, data: dict[str, bool]):
-        """Get measurements of a device."""
+        uid: UID for device
+        """
         params = {"apiKey": self.api_key}
-        return await self._put(APIV2+"/pods/{}/smartmode".format(uid), params, data)
+        return await self._get(APIV2 + "/pods/{}/smartmode".format(uid), params)
+
+    async def async_enable_climate_react(self, uid: str, data: dict[str, bool]):
+        """Enable/Disable Climate React on a device.
+
+        uid: UID for device
+        data: dict {enabled: boolean}
+        """
+        params = {"apiKey": self.api_key}
+        return await self._put(APIV2 + "/pods/{}/smartmode".format(uid), params, data)
 
     async def async_get_timer(self, uid: str):
-        """Get measurements of a device."""
+        """Get Timer on a device.
+
+        uid: UID for device
+        """
         params = {"apiKey": self.api_key}
-        return await self._get(APIV1+"/pods/{}/schedules/".format(uid), params)
+        return await self._get(APIV1 + "/pods/{}/timer/".format(uid), params)
+
+    async def async_set_timer(self, uid: str, data: dict[str, Any]):
+        """Set Timer on a device.
+
+        uid: UID for device
+        data: dict according to https://sensibo.github.io/#put-/pods/-device_id-/timer/
+        """
+        params = {"apiKey": self.api_key}
+        return await self._put(APIV1 + "/pods/{}/timer/".format(uid), params, data)
+
+    async def async_del_timer(self, uid: str):
+        """Delete Timer on a device.
+
+        uid: UID for device
+        """
+        params = {"apiKey": self.api_key}
+        return await self._delete(APIV1 + "/pods/{}/timer/".format(uid), params)
+
+    async def async_get_schedules(self, uid: str):
+        """Get Schedules on a device.
+
+        uid: UID for device
+        """
+        params = {"apiKey": self.api_key}
+        return await self._get(APIV1 + "/pods/{}/schedules/".format(uid), params)
+
+    async def async_get_schedule(self, uid: str, schedule_id: str):
+        """Get Schedule on a device.
+
+        uid: UID for device
+        schedule_id: string value for schedule id
+        """
+        params = {"apiKey": self.api_key}
+        return await self._get(
+            APIV1 + "/pods/{}/schedules/{}".format(uid, schedule_id), params
+        )
+
+    async def async_set_schedule(self, uid: str, data: dict[str, Any]):
+        """Set Schedule on a device.
+
+        uid: UID for device
+        schedule_id: string value for schedule id
+        data: dict according to https://sensibo.github.io/#post-/pods/-device_id-/schedules/
+        """
+        params = {"apiKey": self.api_key}
+        return await self._post(APIV1 + "/pods/{}/schedules/".format(uid), params, data)
+
+    async def async_enable_schedule(
+        self, uid: str, schedule_id: str, data: dict[str, bool]
+    ):
+        """Enable/Disable Schedule on a device.
+
+        uid: UID for device
+        schedule_id: string value for schedule id
+        data: dict {isEnabled: boolean}
+        """
+        params = {"apiKey": self.api_key}
+        return await self._put(
+            APIV1 + "/pods/{}/schedules/{}".format(uid, schedule_id), params, data
+        )
+
+    async def async_del_schedule(self, uid: str, schedule_id: str):
+        """Delete Schedule on a device.
+
+        uid: UID for device
+        schedule_id: string value for schedule id
+        """
+        params = {"apiKey": self.api_key}
+        return await self._delete(
+            APIV1 + "/pods/{}/schedules/{}".format(uid, schedule_id), params
+        )
 
     async def async_set_ac_states(
         self,
         uid: str,
-        acstate: dict[str, bool | int | str],
+        ac_state: dict[str, Any],
     ):
-        """Set a specific device property."""
+        """Set a specific device property.
+
+        uid: UID for device
+        ac_state: dict according to https://sensibo.github.io/#post-/pods/-device_id-/acStates
+        """
         params = {"apiKey": self.api_key}
-        data = {"acState": acstate}
-        return await self._post(APIV2+"/pods/{}/acStates".format(uid), params, data)
+        data = {"acState": ac_state}
+        return await self._post(APIV2 + "/pods/{}/acStates".format(uid), params, data)
 
     async def async_set_ac_state_property(
         self,
         uid: str,
         name: str,
         value: bool | int | str,
-        ac_state: dict[str,Any],
+        ac_state: dict[str, Any],
         assumed_state: bool = False,
     ):
-        """Set a specific device property."""
+        """Set a specific device property.
+
+        uid: UID for device
+        name: Field name to change
+        value: New value of field
+        ac_state: dict according to https://sensibo.github.io/#post-/pods/-device_id-/acStates
+        assumed_state: bool is state change assumed
+        """
         params = {"apiKey": self.api_key}
         data = {"currentAcState": ac_state, "newValue": value}
         if assumed_state:
             data["reason"] = "StateCorrectionByUser"
-        return await self._patch(APIV2+"/pods/{}/acStates/{}".format(uid, name), params, data)
+        return await self._patch(
+            APIV2 + "/pods/{}/acStates/{}".format(uid, name), params, data
+        )
 
     async def _get(self, path: str, params: dict[str, Any]):
-        """Make api call to Sensibo api."""
+        """Make GET api call to Sensibo api."""
         async with self._session.get(path, params=params) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 error = await resp.text()
                 raise SensiboError(f"API error: {error}")
-            response = await resp.json()
+            try:
+                response = await resp.json()
+            except Exception as error:
+                raise SensiboError(f"Could not return json {error}")
         return response["result"]
 
     async def _put(self, path: str, params: dict[str, Any], data: dict[str, Any]):
-        """Make api call to Sensibo api."""
-        async with self._session.put(path, params=params, data=json.dumps(data)) as resp:
+        """Make PUT api call to Sensibo api."""
+        async with self._session.put(
+            path, params=params, data=json.dumps(data)
+        ) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 error = await resp.text()
                 raise SensiboError(f"API error: {error}")
-            response = await resp.json()
+            try:
+                response = await resp.json()
+            except Exception as error:
+                raise SensiboError(f"Could not return json {error}")
         return response["result"]
 
     async def _post(self, path: str, params: dict[str, Any], data: dict[str, Any]):
-        """Make api call to Sensibo api."""
-        async with self._session.post(path, params=params, data=json.dumps(data)) as resp:
+        """Make POST api call to Sensibo api."""
+        async with self._session.post(
+            path, params=params, data=json.dumps(data)
+        ) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 error = await resp.text()
                 raise SensiboError(f"API error: {error}")
-            response = await resp.json()
+            try:
+                response = await resp.json()
+            except Exception as error:
+                raise SensiboError(f"Could not return json {error}")
         return response["result"]
 
     async def _patch(self, path: str, params: dict[str, Any], data: dict[str, Any]):
-        """Make api call to Sensibo api."""
-        async with self._session.patch(path, params=params, data=json.dumps(data)) as resp:
+        """Make PATCH api call to Sensibo api."""
+        async with self._session.patch(
+            path, params=params, data=json.dumps(data)
+        ) as resp:
             if resp.status == 401:
                 raise AuthenticationError("Invalid API key")
             if resp.status != 200:
                 error = await resp.text()
                 raise SensiboError(f"API error: {error}")
-            response = await resp.json()
+            try:
+                response = await resp.json()
+            except Exception as error:
+                raise SensiboError(f"Could not return json {error}")
+        return response["result"]
+
+    async def _delete(self, path: str, params: dict[str, Any]):
+        """Make DELETE api call to Sensibo api."""
+        async with self._session.delete(path, params=params) as resp:
+            if resp.status == 401:
+                raise AuthenticationError("Invalid API key")
+            if resp.status != 200:
+                error = await resp.text()
+                raise SensiboError(f"API error: {error}")
+            try:
+                response = await resp.json()
+            except Exception as error:
+                raise SensiboError(f"Could not return json {error}")
         return response["result"]
